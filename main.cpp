@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
-#include "quantset/pricing/options/test_blackscholesmerton.h"
+
+#include "quantset/tools/test_timespan.h"
+#include "quantset/instrument/test_option.h"
+#include "quantset/pricing/options/test_blackscholes.h"
 
 int main(int argc, char *argv[])
 {

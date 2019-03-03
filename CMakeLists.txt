@@ -19,6 +19,7 @@ set(GMockSrc ${GoogleTest_DIR}/googlemock)
 include_directories("${GoogleTest_DIR}")
 include_directories(${GTestSrc} ${GTestSrc}/include ${GMockSrc} ${GMockSrc}/include)
 
+# Uncomment this and comment the next three calls to build this as a library.
 #add_library(${PROJECT_NAME} SHARED ${SOURCES})
 #install(TARGETS ${PROJECT_NAME} DESTINATION lib/${PROJECT_NAME})
 #install(FILES ${HEADERS} DESTINATION include/${PROJECT_NAME})
