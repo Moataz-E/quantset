@@ -14,22 +14,22 @@ using std::endl;
 /*
  * Test that an option with a strike equal to the underlying, a 0% interest
  * rate for both currencies, and a time to expiry of 1 year is approximately
- * valued at less than 4 units in ccy1.
+ * valued at slightly less than 0.04 pips in ccy2.
  */
-TEST(BlackScholesFXTests, ZeroValueStrikeEqualForward) {
+TEST(BlackScholesFXTests, BaseATMOptionAroundFourPips) {
 
     double ccy1_r = 0.0;
     double ccy2_r = 0.0;
     double spot_vol = 0.1;
 
     Timespan ts1 {0,365,6,0,0}; // 365 days and 6 hours (1 year apprx) to expiry
-    FX eurusd {CurrencyPair::EURUSD, 100, 10000000};
+    FX eurusd {CurrencyPair::EURUSD, 1, 10000000};
 
     BlackScholes bs;
-    EuropeanOption eur_opt1 {EuropeanType::Call, 100, ts1, eurusd};
+    EuropeanOption eur_opt1 {EuropeanType::Call, 1, ts1, eurusd};
     double eur_opt1_price = bs.Price(eur_opt1, ccy1_r, ccy2_r, spot_vol);
 
-    ASSERT_THAT(eur_opt1_price, DoubleNear(4.0, 0.1));
+    ASSERT_THAT(eur_opt1_price, DoubleNear(0.04, 0.001));
 }
 
 /*
@@ -73,15 +73,39 @@ TEST(BlackScholesFXTests, HigherCCY2HigherPrice) {
     double spot_vol = 0.08;
     FX eurusd {CurrencyPair::EURUSD, 1.24, 10000000};
 
-    Timespan ts1 {0,600,0,0,0}; // 600 days to expiry
-    EuropeanOption eur_opt1 {EuropeanType::Call, 1.4, ts1, eurusd};
-
-    Timespan ts2 {0,600,0,0,0}; // 600 days to expiry
-    EuropeanOption eur_opt2 {EuropeanType::Call, 1.4, ts2, eurusd};
+    Timespan ts {0,600,0,0,0}; // 600 days to expiry
+    EuropeanOption eur_opt1 {EuropeanType::Call, 1.4, ts, eurusd};
+    EuropeanOption eur_opt2 {EuropeanType::Call, 1.4, ts, eurusd};
 
     BlackScholes bs;
     double eur_opt1_price = bs.Price(eur_opt1, o1_ccy1_r, o1_ccy2_r, spot_vol);
     double eur_opt2_price = bs.Price(eur_opt2, o2_ccy1_r, o2_ccy2_r, spot_vol);
 
     ASSERT_THAT(eur_opt1_price, Ge(eur_opt2_price));
+}
+
+/*
+ * Test the put-call parity relationship. A call and a put will have the same
+ * value if their strike is equal to the forward price.
+ */
+TEST(BlackScholesFXTests, PutCallParityTest) {
+
+    double ccy1_r = 0.03;
+    double ccy2_r = 0.055;
+
+    double spot_vol = 0.1;
+    FX eurusd {CurrencyPair::EURUSD, 1.24, 10000000};
+
+    Timespan ts {0,30,0,0,0}; // 30 days to expiry
+    double eurusd_fwd = eurusd.Spot() *
+            exp((ccy2_r - ccy1_r) * ts.ApproximateYears());
+
+    EuropeanOption eur_opt1 {EuropeanType::Call, eurusd_fwd, ts, eurusd};
+    EuropeanOption eur_opt2 {EuropeanType::Put, eurusd_fwd, ts, eurusd};
+
+    BlackScholes bs;
+    double eur_opt1_price = bs.Price(eur_opt1, ccy1_r, ccy2_r, spot_vol);
+    double eur_opt2_price = bs.Price(eur_opt2, ccy1_r, ccy2_r, spot_vol);
+
+    ASSERT_THAT(eur_opt1_price, DoubleNear(eur_opt2_price, 0.00001));
 }

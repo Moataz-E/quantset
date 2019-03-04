@@ -7,5 +7,5 @@ Statistics::Statistics() { }
  * distribution.
  */
 double Statistics::Norm(double x) {
-    return 0.5 * erfc(-x / sqrt(2));
+    return 0.5 * (1 + erf(x / sqrt(2)));
 }
