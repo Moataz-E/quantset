@@ -4,7 +4,7 @@
 #include <gmock/gmock-matchers.h>
 
 #include "../../quantset/asset/fx.h"
-#include "../../quantset/instrument/option.h"
+#include "../../quantset/instrument/vanilla_options/eur_option.h"
 #include "../../quantset/pricing/options/blackscholes.h"
 
 using namespace testing;

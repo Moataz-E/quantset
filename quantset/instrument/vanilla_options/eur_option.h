@@ -1,8 +1,8 @@
 #ifndef EUOPTION_H
 #define EUOPTION_H
 
-#include "../../quantset/asset/fx.h"
-#include "../../quantset/tools/timespan.h"
+#include "../../../quantset/asset/fx.h"
+#include "../../../quantset/tools/timespan.h"
 
 // char uses less space than default int
 enum class EuropeanType : char {Call, Put};

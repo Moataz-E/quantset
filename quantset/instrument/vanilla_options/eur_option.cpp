@@ -1,4 +1,4 @@
-#include "option.h"
+#include "eur_option.h"
 
 EuropeanOption::EuropeanOption(EuropeanType opt_type, double opt_strike,
                                Timespan opt_time_to_expiry, FX opt_underlying)

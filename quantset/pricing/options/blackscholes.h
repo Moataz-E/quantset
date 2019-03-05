@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include "../../quantset/tools/statistics.h"
-#include "../../quantset/instrument/option.h"
+#include "../../quantset/instrument/vanilla_options/eur_option.h"
 
 class BlackScholes {
     public:
