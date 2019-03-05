@@ -4,7 +4,7 @@
 #include <gmock/gmock-matchers.h>
 
 #include "../tools/timespan.h"
-#include "../../quantset/instrument/fx.h"
+#include "../../quantset/asset/fx.h"
 #include "../../quantset/instrument/option.h"
 
 using namespace testing;

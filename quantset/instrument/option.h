@@ -1,7 +1,7 @@
 #ifndef EUOPTION_H
 #define EUOPTION_H
 
-#include "../../quantset/instrument/fx.h"
+#include "../../quantset/asset/fx.h"
 #include "../../quantset/tools/timespan.h"
 
 // char uses less space than default int

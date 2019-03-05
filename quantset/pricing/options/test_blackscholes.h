@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock-matchers.h>
 
-#include "../../quantset/instrument/fx.h"
+#include "../../quantset/asset/fx.h"
 #include "../../quantset/instrument/option.h"
 #include "../../quantset/pricing/options/blackscholes.h"
 
