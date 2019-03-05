@@ -14,8 +14,12 @@ class BlackScholes {
          * Black-Scholes formula.
          * Returns price per unit of ccy2.
         */
-        double Price(EuropeanOption opt, double ccy1_ir, double ccy2_ir,
-                    double spot_vol);
+        double Price(EuropeanOption opt, double notional);
+
+        /*
+         * Calculate delta of an FX options
+         */
+        double Delta(EuropeanOption opt);
 };
 
 #endif

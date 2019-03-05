@@ -12,22 +12,23 @@ using std::cout;
 using std::endl;
 
 /*
- * Test that an option with a strike equal to the underlying, a 0% interest
- * rate for both currencies, and a time to expiry of 1 year is approximately
- * valued at slightly less than 0.04 pips in ccy2.
+ * Test that an option with a strike of 1 which is equal to the underlying, a
+ * 0% interest rate for both currencies, and a time to expiry of 1 year is
+ * approximately valued at slightly less than 0.04 pips in ccy2.
  */
 TEST(BlackScholesFXTests, BaseATMOptionAroundFourPips) {
 
     double ccy1_r = 0.0;
     double ccy2_r = 0.0;
     double spot_vol = 0.1;
+    double notional = 1;
 
     Timespan ts1 {0,365,6,0,0}; // 365 days and 6 hours (1 year apprx) to expiry
-    FX eurusd {CurrencyPair::EURUSD, 1, 10000000};
+    FX eurusd {CurrencyPair::EURUSD, 1, spot_vol, ccy1_r, ccy2_r};
 
     BlackScholes bs;
     EuropeanOption eur_opt1 {EuropeanType::Call, 1, ts1, eurusd};
-    double eur_opt1_price = bs.Price(eur_opt1, ccy1_r, ccy2_r, spot_vol);
+    double eur_opt1_price = bs.Price(eur_opt1, notional);
 
     ASSERT_THAT(eur_opt1_price, DoubleNear(0.04, 0.001));
 }
@@ -42,7 +43,9 @@ TEST(BlackScholesFXTests, LongerMaturityHigherPrice) {
     double ccy1_r = 0.03;
     double ccy2_r = 0.055;
     double spot_vol = 0.08;
-    FX eurusd {CurrencyPair::EURUSD, 1.24, 10000000};
+    double notional = 1;
+
+    FX eurusd {CurrencyPair::EURUSD, 1.24, spot_vol, ccy1_r, ccy2_r};
 
     Timespan ts1 {0,90,0,0,0}; // 90 days to expiry
     EuropeanOption eur_opt1 {EuropeanType::Call, 1.3, ts1, eurusd};
@@ -51,8 +54,8 @@ TEST(BlackScholesFXTests, LongerMaturityHigherPrice) {
     EuropeanOption eur_opt2 {EuropeanType::Call, 1.3, ts2, eurusd};
 
     BlackScholes bs;
-    double eur_opt1_price = bs.Price(eur_opt1, ccy1_r, ccy2_r, spot_vol);
-    double eur_opt2_price = bs.Price(eur_opt2, ccy1_r, ccy2_r, spot_vol);
+    double eur_opt1_price = bs.Price(eur_opt1, notional);
+    double eur_opt2_price = bs.Price(eur_opt2, notional);
 
     ASSERT_THAT(eur_opt1_price, Ge(eur_opt2_price));
 }
@@ -65,21 +68,27 @@ TEST(BlackScholesFXTests, LongerMaturityHigherPrice) {
  */
 TEST(BlackScholesFXTests, HigherCCY2HigherPrice) {
 
+    double spot = 1.24;
+    double spot_vol = 0.08;
+    double notional = 1;
+
     double o1_ccy1_r = 0.03;
     double o1_ccy2_r = 0.12;
     double o2_ccy1_r = 0.03;
     double o2_ccy2_r = 0.055;
 
-    double spot_vol = 0.08;
-    FX eurusd {CurrencyPair::EURUSD, 1.24, 10000000};
+    FX o1_eurusd {
+        CurrencyPair::EURUSD, spot, spot_vol, o1_ccy1_r, o1_ccy2_r};
+    FX o2_eurusd {
+        CurrencyPair::EURUSD, spot, spot_vol, o2_ccy1_r, o2_ccy2_r};
 
     Timespan ts {0,600,0,0,0}; // 600 days to expiry
-    EuropeanOption eur_opt1 {EuropeanType::Call, 1.4, ts, eurusd};
-    EuropeanOption eur_opt2 {EuropeanType::Call, 1.4, ts, eurusd};
+    EuropeanOption eur_opt1 {EuropeanType::Call, 1.4, ts, o1_eurusd};
+    EuropeanOption eur_opt2 {EuropeanType::Call, 1.4, ts, o2_eurusd};
 
     BlackScholes bs;
-    double eur_opt1_price = bs.Price(eur_opt1, o1_ccy1_r, o1_ccy2_r, spot_vol);
-    double eur_opt2_price = bs.Price(eur_opt2, o2_ccy1_r, o2_ccy2_r, spot_vol);
+    double eur_opt1_price = bs.Price(eur_opt1, notional);
+    double eur_opt2_price = bs.Price(eur_opt2, notional);
 
     ASSERT_THAT(eur_opt1_price, Ge(eur_opt2_price));
 }
@@ -92,9 +101,11 @@ TEST(BlackScholesFXTests, PutCallParityTest) {
 
     double ccy1_r = 0.03;
     double ccy2_r = 0.055;
-
+    double spot = 1.24;
     double spot_vol = 0.1;
-    FX eurusd {CurrencyPair::EURUSD, 1.24, 10000000};
+    double notional = 1;
+
+    FX eurusd {CurrencyPair::EURUSD, spot, spot_vol, ccy1_r, ccy2_r};
 
     Timespan ts {0,30,0,0,0}; // 30 days to expiry
     double eurusd_fwd = eurusd.Spot() *
@@ -104,8 +115,8 @@ TEST(BlackScholesFXTests, PutCallParityTest) {
     EuropeanOption eur_opt2 {EuropeanType::Put, eurusd_fwd, ts, eurusd};
 
     BlackScholes bs;
-    double eur_opt1_price = bs.Price(eur_opt1, ccy1_r, ccy2_r, spot_vol);
-    double eur_opt2_price = bs.Price(eur_opt2, ccy1_r, ccy2_r, spot_vol);
+    double eur_opt1_price = bs.Price(eur_opt1, notional);
+    double eur_opt2_price = bs.Price(eur_opt2, notional);
 
     ASSERT_THAT(eur_opt1_price, DoubleNear(eur_opt2_price, 0.00001));
 }

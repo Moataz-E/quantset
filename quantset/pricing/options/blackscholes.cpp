@@ -7,16 +7,18 @@ BlackScholes::BlackScholes() {
 /*
  * Price FX option using Garman-Kohlhagen extension to the
  * Black-Scholes formula.
- * Returns price per unit of ccy2.
+ * Returns price in terms of ccy2.
 */
-double BlackScholes::Price(
-        EuropeanOption opt, double ccy1_ir, double ccy2_ir, double spot_vol)
+double BlackScholes::Price(EuropeanOption opt, double notional)
 {
     double spot = opt.Underlying().Spot();
+    double spot_vol = opt.Underlying().SpotVol();
+    double ccy1_r = opt.Underlying().Ccy1Rate();
+    double ccy2_r = opt.Underlying().Ccy2Rate();
     double yrs_to_expiry = opt.TimeToExpiry().ApproximateYears();
 
     // Calculate d1 and d2 terms
-    double rdiff = ccy2_ir - ccy1_ir;
+    double rdiff = ccy2_r - ccy1_r;
     double exp_return = (rdiff + (0.5 * pow(spot_vol, 2))) * yrs_to_expiry;
     double sd_return = spot_vol * sqrt(yrs_to_expiry);
     double d1 = (log(spot / opt.Strike()) + exp_return) / sd_return;
@@ -25,8 +27,8 @@ double BlackScholes::Price(
     // Calculate price depending on call or put
     Statistics stats {};
     double price = 0.0;
-    double ds_spot = spot * exp(-ccy1_ir * yrs_to_expiry);
-    double ds_strike = opt.Strike() * exp(-ccy2_ir * yrs_to_expiry);
+    double ds_spot = spot * exp(-ccy1_r * yrs_to_expiry);
+    double ds_strike = opt.Strike() * exp(-ccy2_r * yrs_to_expiry);
     switch (opt.Type()) {
         case (EuropeanType::Call):
             price = ds_spot * stats.Norm(d1) - ds_strike * stats.Norm(d2);
@@ -36,5 +38,5 @@ double BlackScholes::Price(
             break;
     }
 
-    return price;
+    return price * notional;
 }
