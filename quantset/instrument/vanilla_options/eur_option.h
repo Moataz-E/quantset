@@ -20,6 +20,13 @@ class EuropeanOption {
         Timespan TimeToExpiry() const {return time_to_expiry_;}
         FX Underlying() const {return underlying_;}
 
+        // setters
+        void SetStrike(double strike) {strike_ = strike;}
+        void SetType(EuropeanType type) {type_ = type;}
+        void SetTimeToExpiry(Timespan time_to_expiry) {
+            time_to_expiry_ = time_to_expiry;}
+        void SetUnderlying(FX underlying) {underlying_ = underlying;}
+
     private:
         double strike_;
         EuropeanType type_;

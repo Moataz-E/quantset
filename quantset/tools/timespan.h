@@ -9,6 +9,8 @@ class Timespan {
         Timespan(int weeks, int days = 0, int hours = 0,
                  int minutes = 0, long int seconds = 0);
         double ApproximateYears();
+
+        // getters
         long int SecondsSpan() const {return internal_seconds_;}
 
     private:
