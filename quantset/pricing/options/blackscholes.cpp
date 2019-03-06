@@ -36,6 +36,9 @@ double BlackScholes::Price(EuropeanOption opt, double notional)
         case (EuropeanType::Put):
             price = ds_strike * stats.Norm(-d2) - ds_spot * stats.Norm(-d1);
             break;
+        case (EuropeanType::Forward):
+            double spot_fwd = spot * exp((ccy2_r - ccy1_r) * yrs_to_expiry);
+            price = spot_fwd - opt.Strike();
     }
 
     return price * notional;

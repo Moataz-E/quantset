@@ -5,7 +5,7 @@
 #include "../../../quantset/tools/timespan.h"
 
 // char uses less space than default int
-enum class EuropeanType : char {Call, Put};
+enum class EuropeanType : char {Call, Put, Forward};
 
 
 class EuropeanOption {
